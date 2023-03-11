@@ -2,14 +2,18 @@ package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 
 public class UserValidationTests {
-    private static UserStorage userStorage;
+
+    private static UserStorage userStorage = new InMemoryUserStorage(new HashMap<>());
 
     @Test
     public void validateWithEmptyFields(){

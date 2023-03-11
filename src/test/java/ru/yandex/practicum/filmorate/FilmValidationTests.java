@@ -5,11 +5,14 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+
 import java.time.LocalDate;
+import java.util.HashMap;
 
 public class FilmValidationTests {
 
-    private static FilmStorage filmStorage;
+    private static FilmStorage filmStorage = new InMemoryFilmStorage(new HashMap<>());
 
 
 
