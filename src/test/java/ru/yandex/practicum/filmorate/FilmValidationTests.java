@@ -2,19 +2,21 @@ package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
-
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import java.time.LocalDate;
 
 public class FilmValidationTests {
 
-    private static FilmController controller = new FilmController();
+    private static FilmStorage filmStorage;
+
+
 
     @Test
     public void validateWithEmptyFields(){
         Film film = Film.builder().build();
-        Assertions.assertThrows(ValidateException.class, ()-> controller.validate(film));
+        Assertions.assertThrows(ValidateException.class, ()-> filmStorage.validate(film));
     }
 
     @Test
@@ -26,7 +28,7 @@ public class FilmValidationTests {
                 .duration(160)
                 .build();
 
-        Assertions.assertThrows(ValidateException.class, ()-> controller.validate(film));
+        Assertions.assertThrows(ValidateException.class, ()-> filmStorage.validate(film));
     }
 
     @Test
@@ -38,6 +40,6 @@ public class FilmValidationTests {
                 .duration(160)
                 .build();
 
-        Assertions.assertDoesNotThrow(()-> controller.validate(film));
+        Assertions.assertDoesNotThrow(()-> filmStorage.validate(film));
     }
 }

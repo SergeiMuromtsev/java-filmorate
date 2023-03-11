@@ -2,19 +2,19 @@ package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 
 public class UserValidationTests {
-
-    private static UserController controller = new UserController();
+    private static UserStorage userStorage;
 
     @Test
     public void validateWithEmptyFields(){
         User user = User.builder().build();
-        Assertions.assertThrows(ValidateException.class, ()->controller.validate(user));
+        Assertions.assertThrows(ValidateException.class, ()-> userStorage.validate(user));
     }
 
     @Test
@@ -26,7 +26,7 @@ public class UserValidationTests {
                 .birthday(LocalDate.of(2799, 6,6))
                 .build();
         user.setId();
-        Assertions.assertThrows(ValidateException.class, ()->controller.validate(user));
+        Assertions.assertThrows(ValidateException.class, ()-> userStorage.validate(user));
     }
 
     @Test
@@ -38,6 +38,6 @@ public class UserValidationTests {
                 .birthday(LocalDate.of(1998, 6,6))
                 .build();
         user.setId();
-        Assertions.assertDoesNotThrow(()-> controller.validate(user));
+        Assertions.assertDoesNotThrow(()-> userStorage.validate(user));
     }
 }

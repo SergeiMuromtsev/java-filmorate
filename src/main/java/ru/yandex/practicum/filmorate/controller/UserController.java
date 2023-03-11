@@ -1,69 +1,62 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.server.ResponseStatusException;
-import ru.yandex.practicum.filmorate.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 @RestController
+@RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    private HashMap<Integer, User> users = new HashMap<>();
+    private final UserService userService;
 
-    @GetMapping("/users")
-    public Collection<User> findAll() {
-        log.info("Текущее количество пользователей: {}", users.size());
-        return users.values();
+    @GetMapping
+    public List<User> findAll() {
+        return userService.findAll();
     }
 
-    @PostMapping(value = "/users")
-    public User create(@RequestBody User user) {
-        log.info("Текущее количество пользователей: {}", users.size());
-        try {
-            validate(user);
-        } catch (ValidateException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        user.setId();
-        users.put(user.getId(), user);
+    @PostMapping
+    public User addUser(@RequestBody User user) {
+        return userService.create(user);
+    }
+
+    @PutMapping
+    public User update(@RequestBody User user) {
+        userService.update(user);
         return user;
     }
 
-    @PutMapping("/users")
-    public User update(@RequestBody User user) {
-        try {
-            validate(user);
-        } catch (ValidateException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        if (!users.containsKey(user.getId())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No user for update");
-        } else {
-            users.put(user.getId(), user);
-            return user;
-        }
+    @PutMapping("/{id}/friends/{friendId}")
+    public Boolean addFriends(@PathVariable int id, @PathVariable int friendId) {
+        return userService.addFriendship(id, friendId);
     }
 
-    public void validate(User user){
-        if(user.getEmail() == null || !user.getEmail().contains("@") || user.getEmail().isBlank()) {
-            throw new ValidateException("Wrong email");
-        }
-        if(user.getLogin() == null || user.getLogin().isBlank() || user.getLogin().contains(" ")){
-            throw new ValidateException("Wrong login");
-        }
-        if(user.getName() == null || user.getName().isBlank()){
-            user.setName(user.getLogin());
-        }
-        if(user.getBirthday().isAfter(LocalDate.now())){
-            throw new ValidateException("Wrong birthday");
-        }
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public Boolean deleteFriends(@PathVariable int id, @PathVariable int friendId) {
+        return userService.removeFriendship(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getFriends(@PathVariable int id) {
+        return userService.getFriendsListById(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        return userService.getCommonFriendsList(id, otherId);
+    }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable int id) {
+        return userService.getById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public User deleteById(@PathVariable int id) {
+        return userService.deleteById(id);
     }
 }
 
